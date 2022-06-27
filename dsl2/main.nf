@@ -161,14 +161,14 @@ workflow{
     }
 
   schmiereButter(aufgeteilt.carn)
-  belegeSalamiBrötchen(schmiereButter.output, salami)
+  belegeSalamiBrötchen(schmiereButter.out, salami)
 
   schmiereMargarine(aufgeteilt.veg)
-  belegeVegetarischeBrötchen(schmiereMargarine.output, käse, salat)
+  belegeVegetarischeBrötchen(schmiereMargarine.out, käse, salat)
 
   legeBrötchenAufEinTablett(
-    belegeSalamiBrötchen.output.toList(), 
-    belegeVegetarischeBrötchen.output.toList()) 
-  legeBrötchenAufEinTablett.output
+    belegeSalamiBrötchen.out.toList(), 
+    belegeVegetarischeBrötchen.out.toList()) 
+  legeBrötchenAufEinTablett.out
     .subscribe{f -> f.copyTo("tisch/" + f.name)}
 }

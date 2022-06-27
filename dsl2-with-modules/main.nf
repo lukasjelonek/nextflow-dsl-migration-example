@@ -27,28 +27,39 @@ include { schmiereMargarine } from "./modules/zubereiten"
 include { belegeSalamiBrötchen } from "./modules/zubereiten"
 include { belegeVegetarischeBrötchen } from "./modules/zubereiten"
 
-workflow{
-  brötchen = besorgeBrötchen(params.count).flatten() 
-  salami = holeSalami(params.count).flatten()
-  salat = holeSalat(params.count).flatten()
-  käse = holeKäse(params.count).flatten()
+workflow bereitePlatteVor {
+  take:
+    broetchenAnzahl
 
-  brötchenhälften = schneideBrötchenAuf(brötchen).flatten()
-  aufgeteilt = brötchenhälften
-    .branch{ 
-      veg: it.name.endsWith("oben")
-      carn: it.name.endsWith("unten")
-    }
+  main:
+    brötchen = besorgeBrötchen(broetchenAnzahl).flatten() 
+    salami = holeSalami(broetchenAnzahl).flatten()
+    salat = holeSalat(broetchenAnzahl).flatten()
+    käse = holeKäse(broetchenAnzahl).flatten()
 
-  schmiereButter(aufgeteilt.carn)
-  belegeSalamiBrötchen(schmiereButter.output, salami)
+    brötchenhälften = schneideBrötchenAuf(brötchen).flatten()
+    aufgeteilt = brötchenhälften
+      .branch{ 
+        veg: it.name.endsWith("oben")
+        carn: it.name.endsWith("unten")
+      }
 
-  schmiereMargarine(aufgeteilt.veg)
-  belegeVegetarischeBrötchen(schmiereMargarine.output, käse, salat)
+    schmiereButter(aufgeteilt.carn)
+    belegeSalamiBrötchen(schmiereButter.out, salami)
 
-  legeBrötchenAufEinTablett(
-    belegeSalamiBrötchen.output.toList(), 
-    belegeVegetarischeBrötchen.output.toList()) 
-  legeBrötchenAufEinTablett.output
-    .subscribe{f -> f.copyTo("tisch/" + f.name)}
+    schmiereMargarine(aufgeteilt.veg)
+    belegeVegetarischeBrötchen(schmiereMargarine.out, käse, salat)
+
+    legeBrötchenAufEinTablett(
+      belegeSalamiBrötchen.out.toList(), 
+      belegeVegetarischeBrötchen.out.toList()) 
+    legeBrötchenAufEinTablett.out
+      .subscribe{f -> f.copyTo("tisch/" + f.name)}
+
+  emit:
+    legeBrötchenAufEinTablett.out
+}
+
+workflow {
+  bereitePlatteVor(params.count)
 }
