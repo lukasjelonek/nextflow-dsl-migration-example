@@ -5,7 +5,9 @@ process schneideBrötchenAuf {
   path broetchen 
 
   output:
-  path "${broetchen}.*en" 
+  path "${broetchen}.*en" , emit: alle
+  path "${broetchen}.oben", emit: oben
+  path "${broetchen}.unten", emit: unten
 
   script:
   """

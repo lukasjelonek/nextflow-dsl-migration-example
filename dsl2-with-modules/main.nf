@@ -37,7 +37,8 @@ workflow bereitePlatteVor {
     salat = holeSalat(broetchenAnzahl).flatten()
     käse = holeKäse(broetchenAnzahl).flatten()
 
-    brötchenhälften = schneideBrötchenAuf(brötchen).flatten()
+    brötchenhälften = schneideBrötchenAuf(brötchen).alle.flatten()
+    schneideBrötchenAuf.out.oben.view()
     aufgeteilt = brötchenhälften
       .branch{ 
         veg: it.name.endsWith("oben")
